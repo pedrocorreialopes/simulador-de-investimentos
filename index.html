@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulador Tesouro Direto — Planeje seu Investimento</title>
+<meta name="description" content="Simule investimentos no Tesouro Selic, Tesouro IPCA+ e Tesouro Prefixado. Calcule rendimento líquido, impostos e receba sugestões personalizadas.">
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body class="antialiased">
+
+<!-- ===================== HEADER ===================== -->
+<header class="site-header" id="top">
+  <nav class="navbar">
+    <a href="#top" class="brand">
+      <span class="brand-icon"><i class="fa-solid fa-landmark"></i></span>
+      <span class="brand-text">Tesouro<strong>Simula</strong></span>
+    </a>
+    <button class="nav-toggle" id="navToggle" aria-label="Abrir menu"><i class="fa-solid fa-bars"></i></button>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#simulador-section">Simulador</a></li>
+      <li><a href="#comparativo-section">Comparativo</a></li>
+      <li><a href="#recomendacao-section">Recomendações</a></li>
+      <li><a href="#aprenda-section">Aprenda</a></li>
+      <li><a href="#faq-section">FAQ</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-content">
+      <span class="hero-badge"><i class="fa-solid fa-shield-halved"></i> Investimento garantido pelo Governo Federal</span>
+      <h1>Simule seu investimento no <span class="highlight">Tesouro Direto</span> com precisão</h1>
+      <p>Descubra quanto seu dinheiro pode render no Tesouro Selic, IPCA+ ou Prefixado. Calcule impostos, taxas e compare com poupança e CDB — tudo em segundos.</p>
+      <div class="hero-cta">
+        <a href="#simulador-section" class="btn btn-primary"><i class="fa-solid fa-calculator"></i> Começar simulação</a>
+        <a href="#aprenda-section" class="btn btn-ghost"><i class="fa-solid fa-book-open"></i> Entender o Tesouro Direto</a>
+      </div>
+    </div>
+    <div class="hero-rates" id="heroRates">
+      <div class="rate-card">
+        <span class="rate-label"><i class="fa-solid fa-chart-line"></i> Taxa Selic (meta)</span>
+        <span class="rate-value" id="heroSelicValue">10,75%</span>
+        <span class="rate-status" id="heroSelicStatus">carregando...</span>
+      </div>
+      <div class="rate-card">
+        <span class="rate-label"><i class="fa-solid fa-percent"></i> IPCA (12 meses)</span>
+        <span class="rate-value" id="heroIpcaValue">4,50%</span>
+        <span class="rate-status" id="heroIpcaStatus">carregando...</span>
+      </div>
+      <p class="rate-source">Fonte: API do Banco Central (SGS). <span id="rateUpdatedAt"></span></p>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<!-- ===================== SIMULADOR ===================== -->
+<section id="simulador-section" class="section">
+  <div class="section-head">
+    <span class="section-kicker">Passo 1</span>
+    <h2>Configure sua simulação</h2>
+    <p>Escolha o título, informe os valores e ajuste as taxas conforme sua estratégia.</p>
+  </div>
+
+  <form id="simForm" class="sim-grid">
+    <!-- Título -->
+    <div class="card span-full">
+      <h3 class="card-title"><i class="fa-solid fa-landmark-dome"></i> Escolha o título público</h3>
+      <div class="title-options" id="titleOptions">
+        <label class="title-card" data-type="selic">
+          <input type="radio" name="tipoTitulo" value="selic" checked>
+          <span class="tc-icon"><i class="fa-solid fa-water"></i></span>
+          <span class="tc-name">Tesouro Selic</span>
+          <span class="tc-desc">Pós-fixado · alta liquidez · ideal p/ reserva de emergência</span>
+        </label>
+        <label class="title-card" data-type="ipca">
+          <input type="radio" name="tipoTitulo" value="ipca">
+          <span class="tc-icon"><i class="fa-solid fa-shield-heart"></i></span>
+          <span class="tc-name">Tesouro IPCA+</span>
+          <span class="tc-desc">Protege da inflação · ideal p/ objetivos de longo prazo</span>
+        </label>
+        <label class="title-card" data-type="ipca_juros">
+          <input type="radio" name="tipoTitulo" value="ipca_juros">
+          <span class="tc-icon"><i class="fa-solid fa-coins"></i></span>
+          <span class="tc-name">IPCA+ c/ Juros Semestrais</span>
+          <span class="tc-desc">Paga cupons de juros a cada 6 meses</span>
+        </label>
+        <label class="title-card" data-type="pre">
+          <input type="radio" name="tipoTitulo" value="pre">
+          <span class="tc-icon"><i class="fa-solid fa-lock"></i></span>
+          <span class="tc-name">Tesouro Prefixado</span>
+          <span class="tc-desc">Taxa fixa contratada · previsível se levado ao vencimento</span>
+        </label>
+        <label class="title-card" data-type="pre_juros">
+          <input type="radio" name="tipoTitulo" value="pre_juros">
+          <span class="tc-icon"><i class="fa-solid fa-money-bill-trend-up"></i></span>
+          <span class="tc-name">Prefixado c/ Juros Semestrais</span>
+          <span class="tc-desc">Taxa fixa com pagamento de cupons semestrais</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Valores -->
+    <div class="card">
+      <h3 class="card-title"><i class="fa-solid fa-sack-dollar"></i> Valores do investimento</h3>
+      <div class="field">
+        <label for="valorInicial">Valor inicial a investir</label>
+        <div class="input-prefix">
+          <span>R$</span>
+          <input type="number" id="valorInicial" min="0" step="50" value="1000">
+        </div>
+      </div>
+      <div class="field">
+        <label for="aporteMensal">Aporte mensal</label>
+        <div class="input-prefix">
+          <span>R$</span>
+          <input type="number" id="aporteMensal" min="0" step="50" value="300">
+        </div>
+      </div>
+      <div class="field field-row">
+        <div>
+          <label for="prazoAnos">Prazo (anos)</label>
+          <input type="number" id="prazoAnos" min="0" max="40" value="5">
+        </div>
+        <div>
+          <label for="prazoMeses">+ meses</label>
+          <input type="number" id="prazoMeses" min="0" max="11" value="0">
+        </div>
+      </div>
+    </div>
+
+    <!-- Taxas -->
+    <div class="card">
+      <h3 class="card-title"><i class="fa-solid fa-sliders"></i> Taxas da simulação</h3>
+
+      <div id="rateFieldsSelic" class="rate-fields">
+        <div class="field">
+          <label for="taxaSelic">Taxa Selic anual (%)</label>
+          <input type="number" id="taxaSelic" step="0.01" value="10.75">
+        </div>
+        <div class="field">
+          <label for="spreadSelic">Ágio/deságio do título (p.p.)</label>
+          <input type="number" id="spreadSelic" step="0.01" value="0.00">
+          <small>Tesouro Selic costuma pagar Selic + pequeno spread. Consulte a taxa exata no site oficial.</small>
+        </div>
+      </div>
+
+      <div id="rateFieldsIpca" class="rate-fields hidden">
+        <div class="field">
+          <label for="taxaIpca">IPCA projetado anual (%)</label>
+          <input type="number" id="taxaIpca" step="0.01" value="4.50">
+        </div>
+        <div class="field">
+          <label for="jurosReal">Juros reais contratados (%)</label>
+          <input type="number" id="jurosReal" step="0.01" value="6.00">
+        </div>
+      </div>
+
+      <div id="rateFieldsPre" class="rate-fields hidden">
+        <div class="field">
+          <label for="taxaPre">Taxa prefixada contratada (% a.a.)</label>
+          <input type="number" id="taxaPre" step="0.01" value="12.00">
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="taxaCorretora">Taxa da corretora (% a.a., opcional)</label>
+        <input type="number" id="taxaCorretora" step="0.01" value="0">
+        <small>A maioria das corretoras não cobra taxa adicional além da custódia da B3 (0,20% a.a. acima de R$ 10.000).</small>
+      </div>
+    </div>
+
+    <!-- Perfil -->
+    <div class="card">
+      <h3 class="card-title"><i class="fa-solid fa-user-check"></i> Seu perfil e objetivo</h3>
+      <div class="field">
+        <label for="objetivo">Qual o objetivo deste investimento?</label>
+        <select id="objetivo">
+          <option value="reserva">Reserva de emergência</option>
+          <option value="aposentadoria">Aposentadoria / longo prazo</option>
+          <option value="bem">Comprar um bem (carro, imóvel...)</option>
+          <option value="viagem">Viagem / objetivo de curto-médio prazo</option>
+          <option value="educacao">Educação</option>
+          <option value="outro">Outro</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="perfil">Perfil de investidor</label>
+        <select id="perfil">
+          <option value="conservador">Conservador</option>
+          <option value="moderado" selected>Moderado</option>
+          <option value="arrojado">Arrojado</option>
+        </select>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block"><i class="fa-solid fa-calculator"></i> Calcular simulação</button>
+    </div>
+  </form>
+</section>
+
+<!-- ===================== RESULTADOS ===================== -->
+<section id="resultados-section" class="section">
+  <div class="section-head">
+    <span class="section-kicker">Passo 2</span>
+    <h2>Resultado da simulação</h2>
+    <p>Valores estimados considerando taxa de custódia B3, taxa de corretora e Imposto de Renda regressivo.</p>
+  </div>
+
+  <div class="kpi-grid" id="kpiGrid">
+    <div class="kpi-card">
+      <span class="kpi-icon"><i class="fa-solid fa-piggy-bank"></i></span>
+      <span class="kpi-label">Total investido</span>
+      <span class="kpi-value" id="kpiInvestido">R$ 0,00</span>
+    </div>
+    <div class="kpi-card">
+      <span class="kpi-icon"><i class="fa-solid fa-chart-column"></i></span>
+      <span class="kpi-label">Valor bruto acumulado</span>
+      <span class="kpi-value" id="kpiBruto">R$ 0,00</span>
+    </div>
+    <div class="kpi-card">
+      <span class="kpi-icon"><i class="fa-solid fa-receipt"></i></span>
+      <span class="kpi-label">IR + taxas estimados</span>
+      <span class="kpi-value" id="kpiImpostos">R$ 0,00</span>
+    </div>
+    <div class="kpi-card kpi-highlight">
+      <span class="kpi-icon"><i class="fa-solid fa-wallet"></i></span>
+      <span class="kpi-label">Valor líquido final</span>
+      <span class="kpi-value" id="kpiLiquido">R$ 0,00</span>
+    </div>
+    <div class="kpi-card">
+      <span class="kpi-icon"><i class="fa-solid fa-percent"></i></span>
+      <span class="kpi-label">Rentabilidade líquida total</span>
+      <span class="kpi-value" id="kpiRentTotal">0,00%</span>
+    </div>
+    <div class="kpi-card">
+      <span class="kpi-icon"><i class="fa-solid fa-calendar-check"></i></span>
+      <span class="kpi-label">Rentabilidade líquida anualizada</span>
+      <span class="kpi-value" id="kpiRentAno">0,00%</span>
+    </div>
+  </div>
+
+  <div class="chart-card">
+    <h3><i class="fa-solid fa-chart-area"></i> Evolução do investimento ao longo do tempo</h3>
+    <div class="chart-wrap"><canvas id="evolutionChart"></canvas></div>
+  </div>
+
+  <div class="table-card">
+    <h3><i class="fa-solid fa-table"></i> Detalhamento ano a ano</h3>
+    <div class="table-scroll">
+      <table id="yearTable">
+        <thead>
+          <tr>
+            <th>Ano</th>
+            <th>Total investido</th>
+            <th>Valor bruto</th>
+            <th>Taxas acumuladas</th>
+            <th>Valor líquido estimado</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== COMPARATIVO ===================== -->
+<section id="comparativo-section" class="section section-alt">
+  <div class="section-head">
+    <span class="section-kicker">Passo 3</span>
+    <h2>Compare com outras aplicações</h2>
+    <p>Mesmo valor inicial, aporte mensal e prazo aplicados em diferentes produtos financeiros.</p>
+  </div>
+
+  <div class="chart-card">
+    <div class="chart-wrap"><canvas id="compareChart"></canvas></div>
+  </div>
+
+  <div class="compare-legend" id="compareLegend"></div>
+</section>
+
+<!-- ===================== RECOMENDAÇÕES ===================== -->
+<section id="recomendacao-section" class="section">
+  <div class="section-head">
+    <span class="section-kicker">Passo 4</span>
+    <h2>Sugestões personalizadas</h2>
+    <p>Recomendações geradas com base no seu objetivo, prazo e perfil informados.</p>
+  </div>
+
+  <div class="reco-grid">
+    <article class="reco-card reco-main" id="recoMain">
+      <span class="reco-icon"><i class="fa-solid fa-star"></i></span>
+      <h3>Melhor opção para o seu caso</h3>
+      <p id="recoText">Preencha o formulário e clique em "Calcular simulação" para ver a recomendação.</p>
+    </article>
+
+    <article class="reco-card">
+      <span class="reco-icon"><i class="fa-solid fa-triangle-exclamation"></i></span>
+      <h3>Cuidados importantes</h3>
+      <ul class="reco-list" id="recoCare">
+        <li>Vender Tesouro Prefixado ou IPCA+ antes do vencimento sujeita o valor à <strong>marcação a mercado</strong>, podendo gerar perdas.</li>
+        <li>Prefira manter o título até a data de vencimento para receber exatamente a rentabilidade contratada.</li>
+        <li>Diversifique entre títulos com objetivos e prazos diferentes, em vez de concentrar tudo em um único papel.</li>
+      </ul>
+    </article>
+
+    <article class="reco-card">
+      <span class="reco-icon"><i class="fa-solid fa-building-columns"></i></span>
+      <h3>Onde investir: corretoras</h3>
+      <p>O Tesouro Direto é o <strong>mesmo produto</strong> em qualquer instituição — o que muda é a taxa de administração cobrada pela corretora (a taxa de custódia da B3 de 0,20% a.a. acima de R$ 10.000 é sempre a mesma). Hoje, a maioria das grandes corretoras oferece <strong>taxa zero</strong> de administração, entre elas:</p>
+      <div class="broker-chips">
+        <span>XP Investimentos</span><span>Rico</span><span>Clear</span>
+        <span>BTG Pactual digital</span><span>NuInvest</span><span>Inter</span>
+        <span>C6 Bank</span><span>Ágora</span><span>Itaú (Íon)</span>
+      </div>
+      <small>Lista apenas ilustrativa — confira sempre as condições vigentes em cada instituição antes de escolher.</small>
+    </article>
+  </div>
+</section>
+
+<!-- ===================== APRENDA ===================== -->
+<section id="aprenda-section" class="section section-alt">
+  <div class="section-head">
+    <span class="section-kicker">Aprenda</span>
+    <h2>Como funciona o Tesouro Direto</h2>
+    <p>Conceitos essenciais para investir com mais segurança.</p>
+  </div>
+
+  <div class="learn-grid">
+    <div class="learn-card">
+      <span class="learn-icon"><i class="fa-solid fa-water"></i></span>
+      <h4>Tesouro Selic</h4>
+      <p>Rende conforme a taxa Selic. Baixíssima volatilidade e liquidez diária — ideal para reserva de emergência e objetivos de curto prazo.</p>
+    </div>
+    <div class="learn-card">
+      <span class="learn-icon"><i class="fa-solid fa-shield-heart"></i></span>
+      <h4>Tesouro IPCA+</h4>
+      <p>Paga a variação da inflação (IPCA) mais uma taxa de juros real fixa, protegendo o poder de compra — indicado para objetivos de longo prazo.</p>
+    </div>
+    <div class="learn-card">
+      <span class="learn-icon"><i class="fa-solid fa-lock"></i></span>
+      <h4>Tesouro Prefixado</h4>
+      <p>Taxa de juros fixada no momento da compra. Você já sabe exatamente quanto vai receber no vencimento, mas o valor de mercado oscila até lá.</p>
+    </div>
+    <div class="learn-card">
+      <span class="learn-icon"><i class="fa-solid fa-percent"></i></span>
+      <h4>Imposto de Renda regressivo</h4>
+      <p>22,5% (até 180 dias), 20% (181–360 dias), 17,5% (361–720 dias) e 15% (acima de 720 dias) — incide apenas sobre o rendimento.</p>
+    </div>
+    <div class="learn-card">
+      <span class="learn-icon"><i class="fa-solid fa-building-columns"></i></span>
+      <h4>Taxa de custódia B3</h4>
+      <p>0,20% ao ano sobre o valor que exceder R$ 10.000 investidos — cobrada semestralmente, é isenta para saldos até R$ 10.000.</p>
+    </div>
+    <div class="learn-card">
+      <span class="learn-icon"><i class="fa-solid fa-shield-halved"></i></span>
+      <h4>Segurança</h4>
+      <p>É considerado o investimento de renda fixa mais seguro do Brasil, pois é garantido pelo Tesouro Nacional (Governo Federal).</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== FAQ ===================== -->
+<section id="faq-section" class="section">
+  <div class="section-head">
+    <span class="section-kicker">Dúvidas</span>
+    <h2>Perguntas frequentes</h2>
+  </div>
+  <div class="accordion" id="faqAccordion">
+    <div class="accordion-item">
+      <button class="accordion-trigger">Posso perder dinheiro investindo no Tesouro Direto? <i class="fa-solid fa-chevron-down"></i></button>
+      <div class="accordion-panel"><p>Se você mantiver o título até o vencimento, receberá exatamente a rentabilidade contratada. Porém, se vender antes do prazo (especialmente Prefixado e IPCA+), o preço de venda segue a "marcação a mercado" e pode estar abaixo do valor investido.</p></div>
+    </div>
+    <div class="accordion-item">
+      <button class="accordion-trigger">Qual o valor mínimo para investir? <i class="fa-solid fa-chevron-down"></i></button>
+      <div class="accordion-panel"><p>É possível investir a partir de aproximadamente R$ 30, respeitando o mínimo de 1% do valor de uma unidade do título (fracionamento). Consulte o valor atualizado em tesourodireto.com.br.</p></div>
+    </div>
+    <div class="accordion-item">
+      <button class="accordion-trigger">O Tesouro Direto tem liquidez diária? <i class="fa-solid fa-chevron-down"></i></button>
+      <div class="accordion-panel"><p>Sim, o Tesouro Nacional garante recompra diária de todos os títulos, com pagamento em até 1 dia útil. Isso não significa, porém, que o valor de resgate antecipado será igual ao valor investido.</p></div>
+    </div>
+    <div class="accordion-item">
+      <button class="accordion-trigger">Este simulador usa taxas reais e atualizadas? <i class="fa-solid fa-chevron-down"></i></button>
+      <div class="accordion-panel"><p>A Taxa Selic e o IPCA acumulado exibidos são buscados na API de dados abertos do Banco Central (SGS). As taxas de juros reais do IPCA+ e a taxa do Prefixado são apenas indicativas e devem ser conferidas no site oficial do Tesouro Direto, pois mudam diariamente conforme o mercado.</p></div>
+    </div>
+    <div class="accordion-item">
+      <button class="accordion-trigger">Este site é oficial do Tesouro Nacional? <i class="fa-solid fa-chevron-down"></i></button>
+      <div class="accordion-panel"><p>Não. Este é um simulador educacional independente, sem vínculo com o Tesouro Nacional, a B3 ou o Banco Central. Não constitui recomendação de investimento. Para investir de fato, acesse <a href="https://www.tesourodireto.com.br" target="_blank" rel="noopener">tesourodireto.com.br</a>.</p></div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div>
+      <span class="brand-text footer-brand"><i class="fa-solid fa-landmark"></i> Tesouro<strong>Simula</strong></span>
+      <p>Simulador educacional e independente para investimentos em títulos públicos do Tesouro Direto.</p>
+    </div>
+    <div class="footer-disclaimer">
+      <i class="fa-solid fa-circle-info"></i>
+      <p>As simulações apresentadas são estimativas com fins educacionais, não constituem recomendação de investimento nem garantia de rentabilidade futura. Taxas reais podem variar diariamente. Consulte sempre fontes oficiais: <a href="https://www.tesourodireto.com.br" target="_blank" rel="noopener">Tesouro Direto</a> e <a href="https://www.bcb.gov.br" target="_blank" rel="noopener">Banco Central do Brasil</a>.</p>
+    </div>
+  </div>
+  <p class="footer-copy">© 2026 TesouroSimula — Feito para ajudar você a investir com mais consciência.</p>
+</footer>
+
+<script src="js/main.js"></script>
+</body>
+</html>
